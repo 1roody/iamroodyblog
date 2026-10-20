@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>um servidor http em 30 linhas :: beta_site_me</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="crt" aria-hidden="true"></div>
+  <main class="wrap">
+
+    <a class="back" href="../index.html#posts">&lt;-- cd ..</a>
+
+    <article class="post">
+      <h1>um servidor http em 30 linhas</h1>
+      <div class="meta">2026-10-05 &middot; #http #python #minimal</div>
+
+      <p>
+        HTTP é texto. Um pedido é texto, uma resposta é texto, e um socket é só
+        um cano. Vamos ver isso a funcionar sem nenhuma framework.
+      </p>
+
+      <h2>o código</h2>
+<pre><code>import socket
+
+HOST, PORT = "127.0.0.1", 8080
+
+BODY = b"&lt;h1&gt;ola do socket&lt;/h1&gt;"
+RESP = (
+    b"HTTP/1.1 200 OK\r\n"
+    b"Content-Type: text/html; charset=utf-8\r\n"
+    b"Content-Length: " + str(len(BODY)).encode() + b"\r\n"
+    b"Connection: close\r\n\r\n" + BODY
+)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((HOST, PORT))
+    s.listen()
+    print(f"a ouvir em http://{HOST}:{PORT}")
+    while True:
+        conn, addr = s.accept()
+        with conn:
+            req = conn.recv(4096).decode(errors="replace")
+            print(addr, req.splitlines()[0] if req else "")
+            conn.sendall(RESP)
+</code></pre>
+
+      <h2>testar</h2>
+<pre><code>python3 server.py
+curl -i http://127.0.0.1:8080/</code></pre>
+
+      <h2>o que falta (muito)</h2>
+      <ul>
+        <li>routing: respondemos o mesmo a tudo</li>
+        <li>concorrência: um cliente de cada vez</li>
+        <li>validação: <code>recv(4096)</code> assume que o pedido cabe num pacote</li>
+        <li>segurança: está ligado só a localhost por uma razão</li>
+      </ul>
+
+      <blockquote>entender o que as frameworks escondem é meio caminho para as dispensares.</blockquote>
+    </article>
+
+    <hr>
+    <p class="dim">fim de transmissão.</p>
+    <div class="pager">
+      <a href="001-hello-world.html">&lt;-- anterior</a>
+      <a href="003-sniffer-de-lan-caseiro.html">próximo --&gt;</a>
+    </div>
+
+  </main>
+</body>
+</html>

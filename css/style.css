@@ -1,0 +1,800 @@
+/* beta_site_me — css cru. sem preprocessors, sem frameworks.
+   identidade herdada do plague.exe v2: escuridão, só cinzentos, e a luz
+   (branco com brilho) é o único acento.
+   regra de ouro: no fundo só se anima transform e opacity. */
+
+:root {
+  --bg: #050505;
+  --c0: #131313;   /* fumo dentro do capuz */
+  --c1: #2e2e2e;   /* linhas, bordas */
+  --c2: #565656;   /* decoração */
+  --c3: #969696;   /* texto */
+  --c4: #f2f2f2;   /* óculos, bico, títulos, links */
+  --rim: #a3a3a3;  /* contraluz no contorno */
+  --bit: #5c5c5c;
+  --hud: #4a4a4a;
+  --dim: #7a7a7a;  /* texto secundário que ainda se tem de ler */
+  --box: rgba(8, 8, 8, 0.82);
+  --glow: 0 0 0.35em rgba(255, 255, 255, 0.45), 0 0 1.2em rgba(255, 255, 255, 0.15);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--c3);
+  font-family: "IBM Plex Mono", "Fira Code", "DejaVu Sans Mono", "Courier New", Courier, monospace;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+::selection { background: var(--c4); color: #000; text-shadow: none; }
+
+:focus-visible { outline: 1px dashed var(--c4); outline-offset: 3px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  z-index: 20;
+  top: 8px;
+  left: 8px;
+  padding: 2px 10px;
+  background: var(--c4);
+  color: #000;
+  transform: translateY(-200%);
+}
+.skip:focus { transform: none; }
+
+/* =========================================================
+   fundo (todas as páginas): hexdump, grão, vinheta + scanlines
+   ========================================================= */
+
+/* hexdump microscópico (o tile do plague-v2), a morrer nas margens */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("../img/plague-v2-hex.svg") 0 0 / 576px 480px repeat;
+  opacity: 0.075;
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 42%, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 92%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 42%, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 92%);
+}
+
+/* grão de filme */
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 3;
+  inset: -50%;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.7 -0.55'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 0.9s steps(6) infinite;
+}
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-4%, 3%); }
+  40%  { transform: translate(3%, -5%); }
+  60%  { transform: translate(-6%, -2%); }
+  80%  { transform: translate(5%, 4%); }
+  100% { transform: translate(-2%, 6%); }
+}
+
+/* vinheta + scanlines (mais suave que no v2: aqui há texto para ler nas pontas) */
+.crt {
+  position: fixed;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 75% at 50% 45%, transparent 45%, rgba(0, 0, 0, 0.45) 85%, rgba(0, 0, 0, 0.8) 100%);
+}
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 2px, rgba(0, 0, 0, 0.22) 3px);
+}
+
+/* ---------- só no index: varrimento, nevoeiro, cinzas ---------- */
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 55% at 50% 40%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 42%, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 92%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 42%, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 92%);
+}
+
+/* a janela desce e o hexdump lá dentro sobe na mesma medida: o texto fica
+   parado (alinhado com o body::before) e só a luz passa */
+.scan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 22vh;
+  overflow: hidden;
+  animation: scan 14s linear infinite;
+  mask-image: linear-gradient(transparent, #000 45%, #000 55%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, #000 45%, #000 55%, transparent);
+}
+.scan .hex {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: url("../img/plague-v2-hex.svg") 0 0 / 576px 480px repeat;
+  opacity: 0.26;
+  animation: scan-in 14s linear infinite;
+}
+.scan::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09) 30%, rgba(255, 255, 255, 0.09) 70%, transparent);
+}
+
+@keyframes scan    { from { transform: translateY(-22vh); } to { transform: translateY(100vh); } }
+@keyframes scan-in { from { transform: translateY(22vh); }  to { transform: translateY(-100vh); } }
+
+.fog {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  bottom: -10vh;
+  height: 65vh;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 22% 40% at 18% 70%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(ellipse 18% 34% at 41% 82%, rgba(255, 255, 255, 0.04), transparent 70%),
+    radial-gradient(ellipse 26% 46% at 66% 72%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(ellipse 20% 38% at 88% 78%, rgba(255, 255, 255, 0.035), transparent 70%);
+  animation: drift 48s ease-in-out infinite alternate;
+}
+.fog.front {
+  position: fixed;
+  z-index: 2;
+  height: 34vh;
+  bottom: -14vh;
+  opacity: 0.9;
+  animation-duration: 33s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes drift { from { transform: translateX(-12%); } to { transform: translateX(12%); } }
+
+.ash { position: absolute; inset: 0; pointer-events: none; }
+.ash.front { position: fixed; z-index: 2; }
+
+.ash i {
+  position: absolute;
+  left: var(--l);
+  top: 100%;
+  font-style: normal;
+  font-size: var(--s);
+  line-height: 1;
+  color: #bdbdbd;
+  opacity: 0;
+  animation: rise var(--t) linear var(--dl) infinite;
+}
+.ash.front i { color: #8a8a8a; text-shadow: 0 0 6px rgba(255, 255, 255, 0.35); }
+
+@keyframes rise {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  12%  { opacity: var(--o); }
+  50%  { transform: translate(calc(var(--dx) * -0.4), -55vh); }
+  85%  { opacity: var(--o); }
+  100% { transform: translate(var(--dx), -115vh); opacity: 0; }
+}
+
+/* =========================================================
+   tipografia base
+   ========================================================= */
+
+h1, h2, h3 { font-weight: normal; margin: 0 0 14px; }
+h1, h2 { color: var(--c4); text-shadow: var(--glow); }
+h2 { font-size: 1.05rem; letter-spacing: 0.04em; }
+h3 { font-size: 1rem; color: var(--c3); }
+
+p { margin: 0 0 14px; }
+
+a {
+  color: var(--c4);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--c2);
+}
+a:hover { background: var(--c4); color: #000; border-bottom-color: var(--c4); text-shadow: none; }
+
+code, pre, kbd {
+  font-family: inherit;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--c1);
+}
+code { padding: 0 5px; color: var(--c4); }
+pre { padding: 12px 14px; overflow-x: auto; line-height: 1.35; }
+pre code { border: 0; padding: 0; background: none; color: var(--c3); }
+kbd { padding: 0 4px; font-size: 0.85em; }
+
+hr { border: 0; border-top: 1px dashed var(--c1); margin: 30px 0 16px; }
+
+em { color: var(--c4); font-style: normal; }
+.dim { color: var(--dim); }
+.prompt { color: var(--c2); text-shadow: none; }
+
+.cursor { animation: blink 1s steps(1) infinite; }
+.blink  { animation: blink 1.6s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* =========================================================
+   hero: o doutor da peste
+   ========================================================= */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 16px 72px;
+}
+
+.hero-fig { margin: 0; }
+
+.plague {
+  --cw: 0.6;
+  --top: 8;        /* espaço para os anéis acima do capuz */
+  --under: 18;     /* linhas de bits a escorrer por trás do título */
+  /* cabe no ecrã em largura e altura (com o título por baixo), máx. 11px por caracter */
+  font-size: min(
+    11px,
+    calc((100vw - 48px) / (var(--cols) * var(--cw))),
+    calc((100svh - 260px) / (var(--rows) + var(--drip-rows) + var(--top) - var(--under)))
+  );
+  line-height: 1;
+  position: relative;
+  width: calc(var(--cols) * 1ch);
+  height: calc((var(--rows) + var(--drip-rows)) * 1em);
+  margin-top: calc(var(--top) * 1em);
+  margin-bottom: calc(var(--under) * -1em);
+  font-variant-ligatures: none;
+  font-kerning: none;
+  animation: glitch 11s infinite;
+}
+
+/* a legenda pertence à figura, mas mora no canto do ecrã como o resto do HUD */
+.hero-fig figcaption {
+  position: absolute;
+  z-index: 5;
+  left: 16px;
+  bottom: 16px;
+  max-width: calc(50% - 24px);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c2);
+}
+.hero-fig figcaption .dim { color: var(--hud); }
+.hero-fig figcaption a { color: var(--c3); border-bottom-color: var(--c1); }
+.hero-fig figcaption a:hover { color: #000; }
+
+.hero-txt {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 16px;
+}
+/* sombra para o título se ler por cima dos bits */
+.hero-txt::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -24px -48px;
+  background: radial-gradient(closest-side, rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.6) 60%, transparent);
+}
+
+.hero h1 {
+  font-size: clamp(26px, 6.4vw, 54px);
+  line-height: 1.1;
+  letter-spacing: 0.16em;
+  margin: 0 0 10px;
+  animation: glitch-txt 11s infinite;
+}
+.hero h1 .cursor { color: var(--c3); text-shadow: none; }
+
+.tagline { margin: 0 0 18px; color: var(--dim); min-height: 1.65em; }
+.tagline .cursor { color: var(--c3); }
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+nav a { border: 0; color: var(--c3); padding: 0 2px; }
+nav a::before { content: "["; color: var(--c2); }
+nav a::after  { content: "]"; color: var(--c2); }
+nav a:hover::before,
+nav a:hover::after { color: #000; }
+
+/* ---------- desenho (do plague-v2) ---------- */
+
+.halo {
+  position: absolute;
+  width: 96em;
+  height: 96em;
+  left: calc(var(--hx) * 1ch - 48em);
+  top: calc(var(--hy) * 1em - 48em);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.09) 0, rgba(255, 255, 255, 0.035) 28%, transparent 60%);
+  animation: halo 7s ease-in-out infinite;
+}
+
+@keyframes halo { 50% { opacity: 0.6; } }
+
+.ring {
+  position: absolute;
+  width: 72em;
+  height: 72em;
+  left: calc(var(--hx) * 1ch - 36em);
+  top: calc(var(--hy) * 1em - 36em);
+  overflow: visible;
+  fill: none;
+  stroke: #fff;
+}
+.ring-a { opacity: 0.15; animation: spin 160s linear infinite; }
+.ring-b { opacity: 0.13; animation: spin 240s linear infinite reverse; }
+.ring-c { opacity: 0.2;  animation: spin 55s linear infinite; }
+
+.ring .hair      { stroke-width: 0.22; }
+.ring .ticks     { stroke-width: 2.4; }
+.ring .ticks-big { stroke-width: 4.6; }
+.ring .dash      { stroke-width: 0.35; stroke-dasharray: 0.8 2.4; }
+.ring .arc-1     { stroke-width: 0.5; stroke-dasharray: 46 10 3 10 88 24 6 18; }
+.ring .arc-2     { stroke-width: 1.4; stroke-dasharray: 1.2 4.5; opacity: 0.6; }
+.ring .arc-3     { stroke-width: 0.3; stroke-dasharray: 110 30 8 30; }
+
+.ring text { fill: #fff; stroke: none; font-family: inherit; }
+.ring .bin { font-size: 2.4px; }
+.ring .lab text { font-size: 2.6px; letter-spacing: 0.2px; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* silhueta preta que tapa o fundo (o desenho fica "recortado" na luz) */
+.shade {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--cols) * 1ch);
+  height: calc(var(--rows) * 1em);
+  fill: #000;
+  overflow: visible;
+}
+
+.art {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  line-height: inherit;
+  white-space: pre;
+  background: none;
+  border: 0;
+  overflow: visible;
+}
+
+.art .l0  { color: var(--c0); }
+.art .l1  { color: var(--c1); }
+.art .l2  { color: var(--c2); }
+.art .l3  { color: var(--c3); }
+.art .l4  { color: var(--c4); text-shadow: 0 0 0.35em rgba(255, 255, 255, 0.6), 0 0 1.2em rgba(255, 255, 255, 0.25); }
+.art .rim { color: var(--rim); text-shadow: 0 0 0.5em rgba(255, 255, 255, 0.3); }
+.art .bit { color: var(--bit); }
+
+/* bits soltos na borda que piscam 0 <-> 1 */
+.art .fl { font-style: normal; color: #7a7a7a; }
+.art .fl::before {
+  content: "0";
+  animation: flip-a 1.7s steps(1) var(--d) infinite;
+}
+.art .fl.b::before {
+  content: "1";
+  animation-name: flip-b;
+}
+
+@keyframes flip-a { 50% { content: "1"; } }
+@keyframes flip-b { 50% { content: "0"; } }
+
+/* brilho dos óculos */
+.eye {
+  position: absolute;
+  width: 15em;
+  height: 15em;
+  left: calc(var(--ex) * 1ch - 7.5em);
+  top: calc(var(--ey) * 1em - 7.5em);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0.07) 32%, transparent 66%);
+  pointer-events: none;
+  animation: eye 6.5s ease-in-out var(--ed) infinite;
+}
+
+@keyframes eye {
+  0%, 100% { opacity: 0.55; }
+  45%      { opacity: 1; }
+  61%      { opacity: 0.9; }
+  62%      { opacity: 0.05; }   /* pestaneja */
+  64%      { opacity: 0.85; }
+}
+
+/* ---------- bits a escorrer ---------- */
+
+.drips {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc((var(--rows) + 5) * 1em), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc((var(--rows) + 5) * 1em), transparent 100%);
+}
+
+/* .drip = janela de 1 caracter abaixo da borda do corpo;
+   .f   = a coluna de bits que cai (translateY);
+   .s   = 3 variantes por linha que deslizam para os bits trocarem (translateX) */
+.drip {
+  position: absolute;
+  left: calc(var(--x) * 1ch);
+  top: calc(var(--y) * 1em);
+  width: 1ch;
+  height: calc(var(--fall) * 1em);
+  overflow: hidden;
+}
+
+.drip .f {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+  animation: fall var(--dur) cubic-bezier(0.55, 0, 0.9, 0.65) var(--del) infinite;
+  mask-image: linear-gradient(to bottom, transparent, #000 80%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 80%);
+  will-change: transform;
+}
+
+.drip .s {
+  width: 3ch;
+  white-space: pre;
+  color: var(--bit);
+  animation: flip var(--fl) steps(1) infinite;
+}
+.drip.still .s { animation: none; }
+.drip.w .s     { color: #959595; }
+
+.drip b {
+  font-weight: normal;
+  color: #d6d6d6;
+  text-shadow: 0 0 0.4em rgba(255, 255, 255, 0.55);
+}
+
+@keyframes fall {
+  0%   { transform: translateY(-100%); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(calc(var(--fall) * 1em)); opacity: 0; }
+}
+
+@keyframes flip {
+  0%      { transform: translateX(0); }
+  33.333% { transform: translateX(-1ch); }
+  66.667% { transform: translateX(-2ch); }
+}
+
+/* pingos: a borda estica e encolhe, como cera */
+.drip.ooze .f {
+  animation: ooze var(--dur) ease-in-out var(--del) infinite alternate;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+.drip.ooze .s { color: #3e3e3e; animation: flip 2.4s steps(1) infinite; }
+.drip.ooze b  { color: #7c7c7c; text-shadow: none; }
+
+@keyframes ooze {
+  from { transform: translateY(calc(-100% + 0.2em)); }
+  to   { transform: translateY(calc(-100% + var(--fall) * 1em)); }
+}
+
+/* ---------- glitch ---------- */
+
+@keyframes glitch {
+  0%, 91%, 91.8%, 96%, 96.5%, 100% { transform: none; }
+  91.2% { transform: translate(-0.6em, 0) skewX(-4deg); }
+  91.5% { transform: translate(0.4em, 0); }
+  96.2% { transform: translate(0.25em, 0) scaleY(1.01); }
+}
+
+/* o título treme no mesmo instante que o desenho */
+@keyframes glitch-txt {
+  0%, 91%, 91.8%, 96%, 96.5%, 100% { transform: none; }
+  91.2% { transform: translate(-4px, 0) skewX(-4deg); text-shadow: 3px 0 rgba(255, 255, 255, 0.5), -3px 0 rgba(255, 255, 255, 0.2); }
+  91.5% { transform: translate(3px, 0); }
+  96.2% { transform: translate(2px, 0); }
+}
+
+.tear {
+  position: absolute;
+  left: -3em;
+  right: -3em;
+  top: 0;
+  height: 0.25em;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5) 18%, rgba(255, 255, 255, 0.12) 60%, transparent);
+  opacity: 0;
+  animation: tear 11s steps(1) infinite;
+}
+
+@keyframes tear {
+  0%    { opacity: 0; }
+  91.2% { opacity: 0.7; transform: translateY(calc(var(--rows) * 0.3em)); }
+  91.5% { opacity: 0.4; transform: translateY(calc(var(--rows) * 0.62em)); }
+  91.8% { opacity: 0; }
+  96.2% { opacity: 0.5; transform: translateY(calc(var(--rows) * 0.45em)); }
+  96.5% { opacity: 0; }
+}
+
+/* ---------- HUD (só decoração; a legenda real é a figcaption) ---------- */
+
+@property --leak  { syntax: "<integer>"; inherits: false; initial-value: 0; }
+@property --integ { syntax: "<integer>"; inherits: false; initial-value: 99; }
+
+.hud {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  pointer-events: none;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hud);
+}
+.hud p { position: absolute; margin: 0; }
+.hud .tl { top: 16px; left: 16px; }
+.hud .tr { top: 16px; right: 16px; text-align: right; }
+.hud .br { bottom: 16px; right: 16px; text-align: right; }
+.hud .dim { color: #2c2c2c; }
+
+.leak { counter-reset: leak var(--leak); animation: leak 900s linear infinite; }
+.leak::after { content: counter(leak); }
+@keyframes leak { to { --leak: 1048576; } }
+
+.integ { counter-reset: integ var(--integ); animation: integ 420s linear infinite; }
+.integ::after { content: counter(integ) "%"; }
+@keyframes integ { to { --integ: 0; } }
+
+/* =========================================================
+   conteúdo
+   ========================================================= */
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 18px 80px;
+}
+
+section { margin: 56px 0; }
+section[id] { scroll-margin-top: 24px; }
+
+/* título de secção com uma linha de HUD a fugir para a direita */
+main h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+main h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--c1), transparent);
+}
+
+/* ---------- caixas ---------- */
+
+.box {
+  position: relative;
+  border: 1px solid var(--c1);
+  background: var(--box);
+  padding: 20px 18px 6px;
+  margin-top: 4px;
+}
+/* cantos de mira */
+.box::before,
+.box::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--c3);
+}
+.box::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.box::after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+.box-title {
+  position: absolute;
+  top: -0.85em;
+  left: 18px;
+  margin: 0;
+  padding: 0 8px;
+  background: var(--bg);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c3);
+  text-shadow: none;
+}
+main h2.box-title { display: block; }
+main h2.box-title::after { content: none; }
+
+#status { margin-top: 24px; }
+
+/* listas chave : valor */
+.kv { margin: 0 0 12px; }
+.kv > div { display: flex; flex-wrap: wrap; gap: 0 1ch; padding: 1px 0; }
+.kv dt { min-width: 100px; color: var(--dim); }
+.kv dt::after { content: " :"; color: var(--c2); }
+.kv dd { margin: 0; }
+#uptime, #visitor { color: var(--c4); }
+
+address { font-style: normal; }
+
+/* ---------- lista de posts ---------- */
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.filters button {
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: none;
+  color: var(--dim);
+  border: 1px solid var(--c1);
+  padding: 2px 10px;
+  cursor: pointer;
+}
+.filters button:hover,
+.filters button[aria-pressed="true"] { color: #000; background: var(--c4); border-color: var(--c4); }
+
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-item {
+  display: grid;
+  grid-template-columns: 6ch 1fr;
+  gap: 0 14px;
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--c1);
+}
+.post-item .id { color: var(--c2); transition: color 0.2s, text-shadow 0.2s; }
+.post-item:hover .id { color: var(--c4); text-shadow: var(--glow); }
+.post-item h3 { margin: 0; font-size: 1.05rem; }
+.post-item h3 a { border: 0; }
+.post-item .meta {
+  margin: 2px 0 0;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.post-item .desc { margin: 6px 0 0; }
+.tag { margin-left: 1.2ch; }
+.tag::before { content: "#"; color: var(--c2); }
+.empty { color: var(--dim); padding: 10px 0; }
+
+/* ---------- terminal ---------- */
+
+.term {
+  position: relative;
+  border: 1px solid var(--c1);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12px 14px;
+  min-height: 160px;
+  max-height: 380px;
+  overflow-y: auto;
+  cursor: text;
+}
+#term-out div { white-space: pre-wrap; word-break: break-word; }
+#term-form { display: flex; gap: 8px; margin: 0; }
+#term-form label { white-space: nowrap; color: var(--c4); }
+#term-in {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  outline: 0;
+  color: var(--c4);
+  font: inherit;
+  caret-color: var(--c4);
+}
+
+/* ---------- rodapé ---------- */
+
+.site-foot { padding-top: 0; font-size: 13px; }
+.konami { display: inline-flex; gap: 3px; margin-left: 6px; }
+.konami kbd { color: var(--c2); border-color: var(--c0); }
+
+/* ---------- página de post ---------- */
+
+article.post h1 { font-size: 1.5rem; margin: 6px 0 4px; letter-spacing: 0.04em; }
+article.post .meta {
+  color: var(--dim);
+  margin-bottom: 26px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+article.post h2 { display: block; margin-top: 34px; }
+article.post h2::before { content: "## "; color: var(--c2); text-shadow: none; }
+article.post h2::after { content: none; }
+article.post ul { padding-left: 22px; }
+article.post li::marker { color: var(--c2); }
+article.post blockquote {
+  margin: 14px 0;
+  padding: 2px 14px;
+  border-left: 2px solid var(--c3);
+  color: var(--dim);
+}
+.back { display: inline-block; margin-bottom: 14px; }
+.pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- modo konami: a corrupção acelera ---------- */
+
+body.pwned .plague,
+body.pwned .tear,
+body.pwned .hero h1 { animation-duration: 0.9s; }
+body.pwned .art .l4 { color: #fff; text-shadow: 0 0 0.6em #fff, 0 0 2em rgba(255, 255, 255, 0.6); }
+
+/* ---------- ecrãs pequenos ---------- */
+
+@media (max-width: 600px) {
+  body { font-size: 14px; }
+  .hud { font-size: 8px; }
+  .hud .tr { display: none; }
+  .hero-fig figcaption { font-size: 8px; }
+  .post-item { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .drip .f { transform: translateY(0); }
+  html { scroll-behavior: auto; }
+}
