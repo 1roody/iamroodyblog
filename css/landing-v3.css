@@ -1,4 +1,12 @@
 /* Home v3: only the styles used by this page. */
+@font-face {
+  font-family: "Site Mono";
+  src: url("../fonts/dejavu-sans-mono-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+}
+
 :root {
   --page-gutter: clamp(24px, 8vw, 150px);
   --header-height: 77px;
@@ -10,7 +18,7 @@ body {
   overflow-x: hidden;
   background: #080909;
   color: #b1b3b3;
-  font-family: "IBM Plex Mono", "Fira Code", "DejaVu Sans Mono", "Courier New", Courier, monospace;
+  font-family: "Site Mono", "DejaVu Sans Mono", "Courier New", Courier, monospace;
   font-size: 15px;
   line-height: 1.65;
 }
@@ -130,15 +138,15 @@ main { position: relative; z-index: 1; }
 .plague-svg { display: block; position: absolute; width: 100%; height: 100%; object-fit: contain; object-position: 80% center; opacity: .65; }
 .hero::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(90deg, #080909e8, #08090980 33%, transparent 65%), linear-gradient(0deg, #080909 0%, transparent 22%); }
 .hero-grid { position: absolute; z-index: -2; inset: 0 var(--page-gutter); pointer-events: none; border-left: 1px solid #ffffff08; background: linear-gradient(#ffffff08, #ffffff08) 33.333% 0 / 1px 100% no-repeat, linear-gradient(#ffffff08, #ffffff08) 66.666% 0 / 1px 100% no-repeat; }
-.hero-txt { position: relative; z-index: 1; justify-self: start; }
-h1 { font-size: clamp(48px, 7.6vw, 112px); line-height: .98; letter-spacing: -.065em; margin: 0 0 28px; font-weight: 500; color: #f2f2f2; }
+.hero-txt { position: relative; z-index: 1; justify-self: start; min-width: 0; max-width: 100%; }
+h1 { font-size: clamp(48px, 7.6vw, 112px); line-height: 1.08; letter-spacing: -.065em; margin: 0 0 28px; font-weight: 500; color: #f2f2f2; }
 .tagline { font-size: clamp(13px, 1.25vw, 17px); line-height: 1.8; margin: 0 0 32px; }
 .contact-links { display: flex; flex-wrap: wrap; gap: 16px 28px; font-style: normal; }
 .contact-links a { display: inline-flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dotted #565656; }
 .contact-links a:hover { background: #f2f2f2; color: #000; border-bottom-color: #f2f2f2; }
 .contact-links svg { width: 20px; height: 20px; flex: none; fill: currentColor; }
-.type-line { display: block; width: max-content; white-space: nowrap; }
-.type-char { position: relative; animation: type-character 1ms step-end calc(250ms + var(--step) * 110ms) both; }
+.type-line { display: block; width: max-content; max-width: 100%; overflow-wrap: anywhere; }
+.type-char { position: relative; animation: type-character 1ms step-end calc(250ms + var(--step) * 110ms) backwards; }
 .type-char::after { content: ''; position: absolute; right: -.12em; top: .15em; bottom: .08em; width: 2px; background: #bfc2c2; opacity: 0; animation: typing-caret 110ms step-end calc(251ms + var(--step) * 110ms); }
 .type-line:last-child .type-char:last-child::after { animation: typing-caret 600ms step-end calc(251ms + var(--last-step) * 110ms) 3; }
 @keyframes type-character { from { visibility: hidden; } to { visibility: visible; } }
